@@ -14,7 +14,7 @@ import job from "./lib/cron.js";
 
 const app = express();
 
-// import clerkWebhook from "./webhooks/clerk.webhook.js";
+import clerkWebhook from "./webhooks/clerk.webhook.js"; // import the webhook handler
 // import authRoutes from "./routes/auth.route.js";
 // import messageRoutes from "./routes/message.route.js";
 // import { app, server } from "./lib/socket.js";
@@ -25,7 +25,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 const publicDir = path.join(process.cwd(), "public");
 
 // it's important that you don't parse the webhook event data, it should be in the raw format
-// app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
+app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
 app.use(express.json());
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
