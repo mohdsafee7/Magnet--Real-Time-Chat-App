@@ -15,7 +15,7 @@ import job from "./lib/cron.js";
 const app = express();
 
 import clerkWebhook from "./webhooks/clerk.webhook.js"; // import the webhook handler
-// import authRoutes from "./routes/auth.route.js";
+import authRoutes from "./routes/auth.route.js";
 // import messageRoutes from "./routes/message.route.js";
 // import { app, server } from "./lib/socket.js";
 
@@ -35,7 +35,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/messages", messageRoutes);
 
 // if the public directory exists, serve the static files
