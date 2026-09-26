@@ -39,9 +39,9 @@ app.use("/api/messages", messageRoutes);
 // if the public directory exists, serve the static files
 // this is for the production build
 if (fs.existsSync(publicDir)) {
-  app.use(express.static(publicDir));
+  app.use(express.static(publicDir)); // serve the static files from the public directory
 
-  app.get("/{*any}", (req, res, next) => {
+  app.get("/{*any}", (req, res, next) => { // serve the index.html file for any other route 
     res.sendFile(path.join(publicDir, "index.html"), (err) => next(err));
   });
 }
