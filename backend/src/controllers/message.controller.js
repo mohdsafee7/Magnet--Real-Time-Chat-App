@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import { hasImageKitConfig, uploadChatMedia } from "../lib/imagekit.js";
-// import { getReceiverSocketId, io } from "../lib/socket.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 
 // Get all users except the logged-in user for the sidebar
@@ -108,11 +108,11 @@ export async function sendMessage(req, res) {
 
     //todo : realtime message sending using socket.io
 
-    // const receiverSocketId = getReceiverSocketId(receiverId);
-    // // only send the message in realtime if user is online
-    // if (receiverSocketId) {
-    //   io.to(receiverSocketId).emit("newMessage", newMessage);
-    // }
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    // only send the message in realtime if user is online
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {
