@@ -5,6 +5,7 @@ import {
   getUsersForSidebar,
   sendMessage,
 } from "../controllers/message.controller.js";
+import { createMessageReminder } from "../controllers/reminder.controller.js";
 
 
 import { protectRoute } from "../middleware/auth.middleware.js";
@@ -16,6 +17,7 @@ router.use(protectRoute);
 
 router.get("/users", getUsersForSidebar); // Get all users except the logged-in user for the sidebar
 router.get("/conversations", getConversationsForSidebar); // Get all conversations for the logged-in user for the sidebar
+router.post("/reminders", createMessageReminder);
 router.get("/:id", getMessages); // Get all messages between the logged-in user and another user
 router.post("/send/:id", upload.single("media"), sendMessage); // Send a message to another user
 

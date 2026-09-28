@@ -2,6 +2,8 @@ import { useWallpaper } from "../context/wallpaper";
 import { useChatStore } from "../store/useChatStore";
 import { useSelectedConversation } from "../hooks/useSelectedConversation";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../store/useAuthStore";
 import  ChatSidebar  from "../component/chat/ChatSidebar";
 import  {ChatHeader}  from "../component/chat/ChatHeader";
 import  {MessageList}  from "../component/chat/MessageList";
@@ -15,6 +17,9 @@ function ChatPage() {
   const getUsers = useChatStore((state) => state.getUsers);
   const subscribeToMessages = useChatStore((state) => state.subscribeToMessages);
   const unsubscribeFromMessages = useChatStore((state) => state.unsubscribeFromMessages);
+  const setActiveConversationId = useChatStore((state) => state.setActiveConversationId);
+  const setHighlightedMessageId = useChatStore((state) => state.setHighlightedMessageId);
+  const socket = useAuthStore((state) => state.socket);
 
   const { activeConversation, activeConversationId, isLargeScreen } = useSelectedConversation();
 
@@ -22,6 +27,36 @@ function ChatPage() {
     getUsers();
     getConversations();
   }, [getConversations, getUsers]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessageReminder = (reminder) => {
+      toast.custom(
+        (t) => (
+          <div className="w-[min(22rem,calc(100vw-2rem))] rounded-xl border border-border bg-background p-3 text-foreground shadow-xl">
+            <p className="text-sm font-semibold">Message reminder</p>
+            <p className="mt-1 line-clamp-2 text-sm text-muted">{reminder.messageText}</p>
+            <button
+              type="button"
+              className="mt-2 text-sm font-medium text-accent hover:underline"
+              onClick={() => {
+                setActiveConversationId(reminder.chatId);
+                setHighlightedMessageId(reminder.messageId);
+                toast.dismiss(t.id);
+              }}
+            >
+              Open message
+            </button>
+          </div>
+        ),
+        { duration: 10000 },
+      );
+    };
+
+    socket.on("messageReminder", handleMessageReminder);
+    return () => socket.off("messageReminder", handleMessageReminder);
+  }, [setActiveConversationId, setHighlightedMessageId, socket]);
 
   useEffect(() => {
     if (!activeConversationId) return;
