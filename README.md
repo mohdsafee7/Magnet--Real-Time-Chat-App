@@ -32,6 +32,7 @@ The application is containerized using **Docker** and deployed as a monolithic w
 
 - 🔐 Secure authentication with **Clerk**
 - 💬 Real-time one-to-one messaging with **Socket.IO**
+- ⏰ **Message reminders** with scheduled in-app notifications
 - 🟢 Real-time **online/offline user status**
 - 🖼️ Image/media sharing using **ImageKit**
 - 👤 Automatic Clerk user synchronization through webhooks
@@ -107,6 +108,7 @@ React Client → Clerk → Clerk Webhook → Express → MongoDB
 * **Node.js**
 * **Express.js**
 * **Socket.IO**
+* **Node-Cron** — Scheduled reminder processing
 * **Multer**
 
 ### Database & Services
@@ -204,6 +206,35 @@ Recipient
 ```
 
 This allows media files to be stored through ImageKit while the application stores the relevant URL with the message.
+
+---
+
+### 4. Message Reminders
+
+Magnet allows users to turn an important chat message into an actionable reminder without leaving the conversation.
+
+Users can choose **10 minutes, 1 hour, tomorrow, or a custom date and time**. When the reminder becomes due, the backend processes it using a scheduled cron job and sends a real-time notification through Socket.IO.
+
+```text
+User selects a message
+        ↓
+      Remind me
+        ↓
+ Select reminder time
+        ↓
+ MongoDB stores reminder
+        ↓
+ Cron checks due reminders
+        ↓
+   Socket.IO event
+        ↓
+ 🔔 In-app notification
+        ↓
+   Open message
+        ↓
+Conversation opens and the original message is highlighted.
+```
+Reminders are stored separately from the message and reference the user, message, conversation, due time, and processing status. This keeps the existing message structure unchanged while allowing reminders to be processed independently.
 
 ---
 
@@ -371,6 +402,8 @@ While building Magnet, I worked with:
 * ImageKit integration
 * React Context for global application state
 * Real-time online user presence
+* Scheduled background processing using cron jobs
+* Building message-based reminder workflows with MongoDB and Socket.IO
 * Docker multi-stage builds
 * Production deployment using Render
 * Environment variable management
@@ -385,8 +418,7 @@ Some planned improvements include:
 * Typing indicators
 * Message read/delivery receipts
 * Message pagination
-* Push notifications
-* Redis-based presence management
+* Web Push notifications for reminders when the browser/app is not actively open* Redis-based presence management
 * Rate limiting
 * Retry mechanisms
 * Background job processing
