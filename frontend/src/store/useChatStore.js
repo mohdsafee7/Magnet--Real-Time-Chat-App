@@ -11,6 +11,7 @@ export const useChatStore = create(
       users: [],
       conversations: [],
       messages: [],
+      highlightedMessageId: null,
       selectedUser: null,
       isConversationsLoading: false,
       isUsersLoading: false,
@@ -21,6 +22,20 @@ export const useChatStore = create(
       composerText: "",
       isSoundEnabled: true,
       isSendingMedia: false,
+
+      createMessageReminder: async ({ messageId, chatId, remindAt }) => {
+        try {
+          await axiosInstance.post("/messages/reminders", { messageId, chatId, remindAt });
+          toast.success("Message reminder set");
+          return true;
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to set message reminder");
+          return false;
+        }
+      },
+
+      setHighlightedMessageId: (highlightedMessageId) => set({ highlightedMessageId }),
+      clearHighlightedMessage: () => set({ highlightedMessageId: null }),
 
       getUsers: async () => {
         set({ isUsersLoading: true });
